@@ -49,8 +49,10 @@ class LocationCookieStorage(BaseLocationStorage):
     """ Class that deals with saving user location on client's side (cookies)
     """
 
+    cookie_name = settings.GEOIP_COOKIE_NAME
+
     def _get_location_id(self):
-        return self.request.COOKIES.get(settings.GEOIP_COOKIE_NAME, None)
+        return self.request.COOKIES.get(self.cookie_name, None)
 
     def get(self):
         location_id = self._get_location_id()
@@ -78,7 +80,7 @@ class LocationCookieStorage(BaseLocationStorage):
 
     def _do_set(self, value):
         self.response.set_cookie(
-            key=settings.GEOIP_COOKIE_NAME,
+            key=self.cookie_name,
             value=value,
             domain=self.get_cookie_domain(),
             expires=datetime.utcnow() + timedelta(seconds=settings.GEOIP_COOKIE_EXPIRES))
@@ -88,9 +90,14 @@ class LocationCookieStorage(BaseLocationStorage):
         if not hasattr(self.request, 'location'):
             return False
         # Cookie doesn't exist, we need to store it
-        if settings.GEOIP_COOKIE_NAME not in self.request.COOKIES:
+        if self.cookie_name not in self.request.COOKIES:
             return True
         # Cookie is obsolete, because we've changed it's value during request
         if str(self._get_location_id()) != str(new_value):
             return True
         return False
+
+
+class CurrentLocationCookieStorage(LocationCookieStorage):
+
+    cookie_name = settings.GEOIP_CURRENT_LOCATION_COOKIE_NAME

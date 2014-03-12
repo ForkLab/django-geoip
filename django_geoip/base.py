@@ -11,6 +11,8 @@ location_model = SimpleLazyObject(
 
 
 storage_class = get_class(settings.GEOIP_STORAGE_CLASS)
+current_location_storage_class = get_class(
+    settings.GEOIP_CURRENT_LOCATION_STORAGE_CLASS)
 
 
 class Locator(object):
@@ -102,3 +104,11 @@ class Locator(object):
         :return: Integer or None (if request is first, not set location in middleware)
         """
         return self.location_storage._get_location_id()
+
+
+class CurrentLocator(Locator):
+
+    def __init__(self, request):
+        self.request = request
+        self.location_storage = current_location_storage_class(
+            request=request, response=None)

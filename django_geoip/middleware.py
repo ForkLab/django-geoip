@@ -9,8 +9,17 @@ def get_location(request):
     return request._cached_location
 
 
+def get_current_location(request):
+    from django_geoip.base import CurrentLocator
+    if not hasattr(request, '_cached_current_location'):
+        request._cached_current_location = CurrentLocator(request).locate()
+    return request._cached_current_location
+
+
 class LocationMiddleware(object):
 
     def process_request(self, request):
         """ Don't detect location, until we request it implicitly """
         request.location = SimpleLazyObject(lambda: get_location(request))
+        request.current_location = SimpleLazyObject(
+            lambda: get_current_location(request))

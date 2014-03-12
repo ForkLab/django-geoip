@@ -12,6 +12,10 @@ class GeoIpConfig(AppConf):
     # (LocationCookieStorage or LocationDummyStorage are available).
     STORAGE_CLASS = 'django_geoip.storage.LocationCookieStorage'
 
+    # for current location, not changeable
+    CURRENT_LOCATION_STORAGE_CLASS = 'django_geoip.storage.CurrentLocationCookieStorage'
+    CURRENT_LOCATION_COOKIE_NAME = 'geoip_current_location_id'
+
     #: Cookie name for LocationCookieStorage class (stores :ref:`custom location's <location_model>` primary key).
     COOKIE_NAME = 'geoip_location_id'
 
