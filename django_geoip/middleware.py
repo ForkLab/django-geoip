@@ -27,7 +27,9 @@ class LocationMiddleware(object):
             lambda: get_current_location(request))
 
     def process_response(self, request, response):
-        if hasattr(request, 'current_location'):
+        if hasattr(request, 'current_location') and \
+           hasattr(request.current_location, '_wrapped') and \
+           request.current_location._wrapped is not None:
             scls = current_location_storage_class(request=request,
                                                   response=response)
             scls.set(location=request.current_location._wrapped)
