@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.utils.functional import SimpleLazyObject
 
+from django_geoip.base import current_location_storage_class
+
 
 def get_location(request):
     from django_geoip.base import Locator
@@ -23,3 +25,10 @@ class LocationMiddleware(object):
         request.location = SimpleLazyObject(lambda: get_location(request))
         request.current_location = SimpleLazyObject(
             lambda: get_current_location(request))
+
+    def process_response(self, request, response):
+        if hasattr(request, 'current_location'):
+            scls = current_location_storage_class(request=request,
+                                                  response=response)
+            scls.set(location=request.current_location._wrapped)
+        return response
