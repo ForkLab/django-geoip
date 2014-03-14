@@ -21,7 +21,7 @@ setup(
     install_requires=[
         'progressbar==2.3dev',
         'django-appconf==0.6',
-        'requests==1.0.4',
+        'requests',
     ],
     classifiers = [
         'Development Status :: 4 - Beta',
