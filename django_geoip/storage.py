@@ -107,3 +107,8 @@ class CurrentLocationCookieStorage(LocationCookieStorage):
         super(LocationCookieStorage, self).__init__(*args, **kwargs)
         self.cookie_name = settings.GEOIP_CURRENT_LOCATION_COOKIE_NAME
         self.location_attr = 'current_location'
+
+    def get(self):
+        result = super(CurrentLocationCookieStorage, self).get()
+        if result is None:
+            return settings.GEOIP_LOCATION_EMPTY_VALUE
