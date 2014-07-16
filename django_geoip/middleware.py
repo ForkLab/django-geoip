@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.utils.functional import SimpleLazyObject
+try:
+    from django.utils.functional import empty
+except ImportError:
+    # django 1.3 backwards compatibility
+    empty = None
 
 from django_geoip.base import current_location_storage_class
 
@@ -28,8 +33,9 @@ class LocationMiddleware(object):
 
     def process_response(self, request, response):
         if hasattr(request, 'current_location') and \
-           hasattr(request.current_location, '_wrapped') and \
-           request.current_location._wrapped is not None:
+           hasattr(request.current_location, '_wrapped'):
+            if request.current_location._wrapped is empty:
+                request.current_location._setup()
             scls = current_location_storage_class(request=request,
                                                   response=response)
             scls.set(location=request.current_location._wrapped)
